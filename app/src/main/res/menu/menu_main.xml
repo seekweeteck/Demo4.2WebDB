@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="my.edu.tarc.demo42webdb.MainActivity" >
+    <item
+        android:id="@+id/action_sync"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:orderInCategory="100"
+        android:title="@string/sync"
+        app:showAsAction="ifRoom" />
+</menu>
