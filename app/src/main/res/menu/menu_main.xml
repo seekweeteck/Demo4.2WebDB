@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="my.edu.tarc.demo42webdb.MainActivity" >
     <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_action_add"
+        android:title="@string/add"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_sync"
-        android:icon="@android:drawable/ic_popup_sync"
+        android:icon="@drawable/ic_action_sync"
         android:orderInCategory="100"
         android:title="@string/sync"
         app:showAsAction="ifRoom" />

@@ -10,44 +10,35 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONArray
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     private val REQUEST_CODE = 1
-    lateinit var progress: ProgressBar
-    lateinit var userList: ArrayList<User>
-    lateinit var adapter: UserListAdapter
+    private lateinit var progress: ProgressBar
+    private lateinit var userList: ArrayList<User>
+    private lateinit var adapter: UserListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         //Initialise variables and UI
-        userList = ArrayList<User>()
+        userList = ArrayList()
 
         adapter = UserListAdapter(this)
         adapter.setUsers(userList)
 
-        progress = findViewById(R.id.progress_bar)
+        progress = findViewById(R.id.progressBar)
         progress.visibility = View.GONE
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        fab.setOnClickListener { view ->
-            val intent = Intent(this, AddActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,12 +48,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when(item.itemId) {
             R.id.action_sync -> {
                 syncContact()
+                true
+            }
+            R.id.action_add -> {
+                val intent = Intent(this, AddActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -73,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK){
                 data?.let{
-                    val user = User(it.getStringExtra(AddActivity.EXTRA_NAME), it.getStringExtra(AddActivity.EXTRA_CONTACT))
+                    val user = User(0, it.getStringExtra(AddActivity.EXTRA_NAME)!!, it.getStringExtra(AddActivity.EXTRA_CONTACT)!!)
                     createUser(user)
                 }
             }
@@ -89,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
-            Response.Listener { response ->
+            { response ->
                 // Process the JSON
                 try{
                     if(response != null){
@@ -112,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
                 }
             },
-            Response.ErrorListener { error ->
+            { error ->
                 Log.d("Main", "Response: %s".format(error.message.toString()))
                 progress.visibility = View.GONE
             }
@@ -141,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
-            Response.Listener { response ->
+            { response ->
                 // Process the JSON
                 try{
                     if(response != null){
@@ -151,7 +144,7 @@ class MainActivity : AppCompatActivity() {
                         val size: Int = jsonArray.length()
                         for(i in 0..size-1){
                             var jsonUser: JSONObject = jsonArray.getJSONObject(i)
-                            var user: User = User(jsonUser.getString("name"), jsonUser.getString("contact"))
+                            var user: User = User(jsonUser.getInt("id"), jsonUser.getString("name"), jsonUser.getString("contact"))
 
                             userList.add(user)
                         }
@@ -160,11 +153,12 @@ class MainActivity : AppCompatActivity() {
                     }
                 }catch (e:Exception){
                     Log.d("Main", "Response: %s".format(e.message.toString()))
+                    Toast.makeText(applicationContext, "Error loading record", Toast.LENGTH_LONG).show()
                     progress.visibility = View.GONE
 
                 }
             },
-            Response.ErrorListener { error ->
+            { error ->
                 Log.d("Main", "Response: %s".format(error.message.toString()))
                 progress.visibility = View.GONE
             }
@@ -181,4 +175,5 @@ class MainActivity : AppCompatActivity() {
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
 
+    
 }

@@ -9,7 +9,8 @@
     <string name="error_record_not_saved">Record not saved</string>
     <string name="record_saved">Record saved</string>
     <string name="sync">Sync</string>
-    <string name="url_server">https://your_server.000webhostapp.com/api/</string>
+    <string name="url_server">https://seekt.000webhostapp.com/api/</string>
     <string name="url_user_read">user/read.php</string>
     <string name="url_user_create">user/create.php</string>
+    <string name="action_button">Action Button</string>
 </resources>
